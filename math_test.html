@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Тест по математика - Цели изрази</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .container {
+      width: 400px;
+      text-align: center;
+    }
+
+    #answers .answer {
+      display: block;
+      margin: 5px 0;
+      padding: 10px;
+      width: 100%;
+      font-size: 16px;
+    }
+
+    .correct {
+      background-color: green;
+    }
+
+    .wrong {
+      background-color: red;
+    }
+
+    #end-message {
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Тест по математика за 7-ми клас</h2>
+    <div id="score-container">Брой точки: <span id="score">0</span></div>
+    <div id="question-container">
+      <p id="question"></p>
+      <div id="answers">
+        <button class="answer" onclick="checkAnswer(0)"></button>
+        <button class="answer" onclick="checkAnswer(1)"></button>
+        <button class="answer" onclick="checkAnswer(2)"></button>
+      </div>
+      <button id="next-button" onclick="nextQuestion()" style="display: none;">Следваща задача</button>
+    </div>
+    <div id="end-message" style="display: none;">
+      <p id="final-score"></p>
+      <p id="feedback"></p>
+    </div>
+  </div>
+  <script>
+    const questions = [
+      {
+        question: "Кое е резултатът от (x + 4)(x - 2)?",
+        answers: ["x² + 2x - 8", "x² + 6x - 8", "x² - 2x + 8"],
+        correct: 0
+      },
+      {
+        question: "Изразът (x + 3)² е равен на?",
+        answers: ["x² + 6x + 9", "x² + 9x + 3", "x² + 3x + 9"],
+        correct: 0
+      },
+      {
+        question: "Кое е резултатът от (x - 5)(x + 5)?",
+        answers: ["x² - 25", "x² + 25", "x² - 10x + 25"],
+        correct: 0
+      },
+      {
+        question: "Изразът (x - 4)² е равен на?",
+        answers: ["x² - 8x + 16", "x² - 16x + 4", "x² + 4x + 16"],
+        correct: 0
+      },
+      {
+        question: "Кое е резултатът от умножението 3x(x + 7)?",
+        answers: ["3x² + 21x", "3x² + 7x", "3x² + 10x"],
+        correct: 0
+      },
+      {
+        question: "Изразът (2x + 3)(x - 2) е равен на?",
+        answers: ["2x² - x - 6", "2x² - 4x - 6", "2x² + 3x - 6"],
+        correct: 0
+      },
+      {
+        question: "Кое е резултатът от (x + 6)(x - 6)?",
+        answers: ["x² - 36", "x² + 36", "x² - 12x + 36"],
+        correct: 0
+      },
+      {
+        question: "Изразът (2x + 1)² е равен на?",
+        answers: ["4x² + 4x + 1", "4x² + 1x + 1", "4x² + 2x + 1"],
+        correct: 0
+      },
+      {
+        question: "Кое е резултатът от умножението (x - 7)(x + 3)?",
+        answers: ["x² - 4x - 21", "x² + 10x + 21", "x² - 21x + 4"],
+        correct: 0
+      },
+      {
+        question: "Изразът (x - 3)² е равен на?",
+        answers: ["x² - 6x + 9", "x² - 9x + 3", "x² + 6x + 9"],
+        correct: 0
+      }
+    ];
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let answered = false;
+
+    function loadQuestion() {
+      const question = questions[currentQuestionIndex];
+      document.getElementById("question").innerText = question.question;
+      document.getElementById("answers").children[0].innerText = question.answers[0];
+      document.getElementById("answers").children[1].innerText = question.answers[1];
+      document.getElementById("answers").children[2].innerText = question.answers[2];
+      answered = false;
+      document.getElementById("next-button").style.display = "none";
+      
+      Array.from(document.getElementsByClassName("answer")).forEach(button => {
+        button.classList.remove("correct", "wrong");
+        button.disabled = false;
+      });
+    }
+
+    function checkAnswer(answerIndex) {
+      if (answered) return;
+      answered = true;
+      
+      const question = questions[currentQuestionIndex];
+      const isCorrect = answerIndex === question.correct;
+      
+      if (isCorrect) {
+        document.getElementsByClassName("answer")[answerIndex].classList.add("correct");
+        score += 2;
+        document.getElementById("score").innerText = score;
+      } else {
+        document.getElementsByClassName("answer")[answerIndex].classList.add("wrong");
+        document.getElementsByClassName("answer")[question.correct].classList.add("correct");
+      }
+      
+      Array.from(document.getElementsByClassName("answer")).forEach(button => {
+        button.disabled = true;
+      });
+      
+      document.getElementById("next-button").style.display = "block";
+    }
+
+    function nextQuestion() {
+      currentQuestionIndex++;
+      
+      if (currentQuestionIndex < questions.length) {
+        loadQuestion();
+      } else {
+        showFinalResult();
+      }
+    }
+
+    function showFinalResult() {
+      document.getElementById("question-container").style.display = "none";
+      document.getElementById("end-message").style.display = "block";
+      document.getElementById("final-score").innerText = `Точки: ${score}`;
+      
+      if (score < 10) {
+        document.getElementById("feedback").innerText = "Опитай пак!";
+      } else if (score <= 15) {
+        document.getElementById("feedback").innerText = "Можеш да се справиш по добре, вярвам в теб!";
+      } else {
+        document.getElementById("feedback").innerText = "БРАВО, справяш се чудесно!";
+      }
+    }
+
+    loadQuestion();
+  </script>
+</body>
+</html>
